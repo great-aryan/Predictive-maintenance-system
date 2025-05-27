@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Explanations - Smart Home Predictive Maintenance</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo-text h1 {
+            font-size: 24px;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .logo-text p {
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .back-button {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        /* Page Title */
+        .page-title {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .page-title h2 {
+            font-size: 32px;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .page-title p {
+            font-size: 16px;
+            color: #718096;
+        }
+
+        /* Explanation Level Selector */
+        .level-selector {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .level-title {
+            font-size: 18px;
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .level-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .level-btn {
+            padding: 12px 24px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .level-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .level-btn:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        /* Main Content Layout */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+        }
+
+        .explanation-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* Alert Context Card */
+        .alert-context {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-left: 6px solid #e53e3e;
+        }
+
+        .alert-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .alert-icon {
+            font-size: 32px;
+        }
+
+        .alert-info h3 {
+            font-size: 22px;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .alert-info p {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .confidence-badge {
+            background: #e6fffa;
+            color: #234e52;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-left: auto;
+        }
+
+        /* Explanation Content */
+        .explanation-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .explanation-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .simple-explanation {
+            background: #f0fff4;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #48bb78;
+            margin-bottom: 20px;
+        }
+
+        .simple-explanation h4 {
+            color: #22543d;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .simple-explanation p {
+            color: #2d3748;
+            line-height: 1.6;
+        }
+
+        /* Feature Importance Chart */
+        .feature-chart {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-name {
+            min-width: 150px;
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .feature-bar {
+            flex: 1;
+            height: 20px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            margin: 0 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        .feature-fill.high {
+            background: linear-gradient(90deg, #e53e3e, #fc8181);
+        }
+
+        .feature-fill.medium {
+            background: linear-gradient(90deg, #ed8936, #f6ad55);
+        }
+
+        .feature-fill.low {
+            background: linear-gradient(90deg, #4299e1, #63b3ed);
+        }
+
+        .feature-value {
+            font-weight: 600;
+            color: #4a5568;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        /* Data Trends */
+        .trend-chart {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            height: 250px;
+            position: relative;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 200px;
+            background: white;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .chart-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 49%, #e53e3e 50%, transparent 51%),
+                        linear-gradient(-45deg, transparent 49%, #e53e3e 50%, transparent 51%);
+            background-size: 20px 20px;
+            opacity: 0.1;
+        }
+
+        .data-points {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            height: 160px;
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+        }
+
+        .data-point {
+            width: 30px;
+            background: #667eea;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.5s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .data-point:hover {
+            background: #5a67d8;
+            transform: scale(1.1);
+        }
+
+        .data-point::after {
+            content: attr(data-value);
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2d3748;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .data-point:hover::after {
+            opacity: 1;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .sidebar-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* What-If Analysis */
+        .what-if-item {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .what-if-item:hover {
+            background: #edf2f7;
+            transform: translateY(-2px);
+        }
+
+        .what-if-question {
+            font-weight: 500;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .what-if-answer {
+            font-size: 14px;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+
+        /* Similar Cases */
+        .case-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f7fafc;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .case-icon {
+            font-size: 20px;
+        }
+
+        .case-content {
+            flex: 1;
+        }
+
+        .case-title {
+            font-weight: 500;
+            color: #2d3748;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+
+        .case-stats {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .success-rate {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 11px;
+        }
+
+        /* Technical Details */
+        .tech-details {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .tech-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .tech-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .tech-label {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+
+        .action-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #edf2f7;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .tech-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .level-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">🏠</div>
+                <div class="logo-text">
+                    <h1>Smart Home Predictive Maintenance</h1>
+                    <p>AI-Powered IoT Device Monitoring</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="index.html" class="back-button">
+                    ← Back to Dashboard
+                </a>
+            </div>
+        </header>
+        
+
+        <!-- Page Title -->
+        <div class="page-title">
+            <h2>🧠 AI Decision Explanations</h2>
+            <p>Understand how our AI makes predictions and recommendations</p>
+        </div>
+
+        <!-- Explanation Level Selector -->
+        <div class="level-selector">
+            <div class="level-title">Choose Your Explanation Level</div>
+            <div class="level-buttons">
+                <button class="level-btn active" onclick="setExplanationLevel('basic')">
+                    🟢 Basic - Simple Overview
+                </button>
+                <button class="level-btn" onclick="setExplanationLevel('intermediate')">
+                    🟡 Intermediate - Detailed Analysis
+                </button>
+                <button class="level-btn" onclick="setExplanationLevel('advanced')">
+                    🔴 Advanced - Technical Deep Dive
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="explanation-panel">
+                <!-- Alert Context -->
+                <div class="alert-context animate-in">
+                    <div class="alert-header">
+                        <div class="alert-icon">🚨</div>
+                        <div class="alert-info">
+                            <h3>Washing Machine Bearing Wear Detected</h3>
+                            <p>Detected: March 25, 2024 at 11:30 AM</p>
+                        </div>
+                        <div class="confidence-badge">Confidence: 89%</div>
+                    </div>
+                </div>
+
+                <!-- Explanation Content -->
+                <div class="explanation-content animate-in" id="explanationContent">
+                    <!-- Basic Explanation (Default) -->
+                    <div id="basicExplanation">
+                        <div class="explanation-section">
+                            <div class="section-title">
+                                🔍 What We Found
+                            </div>
+                            <div class="simple-explanation">
+                                <h4>Simple Summary</h4>
+                                <p>Your washing machine is making more vibrations than normal during the spin cycle. This usually means the bearings (parts that help the drum spin smoothly) are wearing out. Think of it like worn tires on a car - they make more noise and vibration as they get old.</p>
+                            </div>
+
+                            <div class="feature-chart">
+                                <div class="chart-title">Main Factors (What Made Us Notice)</div>
+                                <div class="feature-item">
+                                    <div class="feature-name">Vibration Level</div>
+                                    <div class="feature-bar">
+                                        <div class="feature-fill high" style="width: 87%;"></div>
+                                    </div>
+                                    <div class="feature-value">87%</div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-name">Noise Pattern</div>
+                                    <div class="feature-bar">
+                                        <div class="feature-fill medium" style="width: 65%;"></div>
+                                    </div>
+                                    <div class="feature-value">65%</div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-name">Energy Usage</div>
+                                    <div class="feature-bar">
+                                        <div class="feature-fill low" style="width: 23%;"></div>
+                                    </div>
+                                    <div class="feature-value">23%</div>
+                                </div>
+                            </div>
+
+                            <div class="simple-explanation">
+                                <h4>What This Means</h4>
+                                <p>The washing machine will likely need repair within 2 weeks. If you fix it now, it will cost about $175. If you wait until it breaks completely, it could cost $300+ and you might not be able to use it for several days.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Intermediate Explanation -->
+                    <div id="intermediateExplanation" style="display: none;">
+                        <div class="explanation-section">
+                            <div class="section-title">
+                                📊 Detailed Analysis
+                            </div>
+                            <div class="simple-explanation">
+                                <h4>Detection Method</h4>
+                                <p>Our AI system continuously monitors vibration patterns using accelerometer data. The algorithm detected a 187% increase in RMS (Root Mean Square) vibration values during spin cycles, with dominant frequency shifts from 58.2 Hz to abnormal harmonic patterns.</p>
+                            </div>
+
+                            <div class="feature-chart">
+                                <div class="chart-title">Contributing Factors & Impact</div>
+                                <div class="feature-item">
+                                    <div class="feature-name">RMS Acceleration</div>
+                                    <div class="feature-bar">
+                                        <div class="feature-fill high" style="width: 92%;"></div>
+                                    </div>
+                                    <div class="feature-value">High</div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-name">Frequency Analysis</div>
+                                    <div class="feature-bar">
+                                        <div class="feature-fill high" style="width: 78%;"></div>
+                                    </div>
+                                    <div class="feature-value">High</div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-name">Motor Current</div>
+                                    <div class="feature-bar">
+                                        <div class="feature-fill medium" style="width: 45%;"></div>
+                                    </div>
+                                    <div class="feature-value">Med</div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-name">Temperature</div>
+                                    <div class="feature-bar">
+                                        <div class="feature-fill low" style="width: 28%;"></div>
+                                    </div>
+                                    <div class="feature-value">Low</div>
+                                </div>
+                            </div>
+
+                            <div class="trend-chart">
+                                <div class="chart-title">Vibration Trend (Past 2 Weeks)</div>
+                                <div class="chart-container">
+                                    <div class="data-points">
+                                        <div class="data-point" style="height: 30%;" data-value="2.1"></div>
+                                        <div class="data-point" style="height: 35%;" data-value="2.3"></div>
+                                        <div class="data-point" style="height: 40%;" data-value="2.6"></div>
+                                        <div class="data-point" style="height: 50%;" data-value="3.1"></div>
+                                        <div class="data-point" style="height: 65%;" data-value="4.2"></div>
+                                        <div class="data-point" style="height: 80%;" data-value="5.8"></div>
+                                        <div class="data-point" style="height: 95%;" data-value="7.3"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tech-details">
+                                <div class="tech-grid">
+                                    <div class="tech-item">
+                                        <div class="tech-value">14 days</div>
+                                        <div class="tech-label">Predicted Failure</div>
+                                    </div>
+                                    <div class="tech-item">
+                                        <div class="tech-value">±4 days</div>
+                                        <div class="tech-label">Confidence Interval</div>
+                                    </div>
+                                    <div class="tech-item">
+                                        <div class="tech-value">LSTM</div>
+                                        <div class="tech-label">Model Type</div>
+                                    </div>
+                                    <div class="tech-item">
+                                        <div class="tech-value">1247</div>
+                                        <div class="tech-label">Training Samples</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Explanation -->
+                    <div id="advancedExplanation" style="display: none;">
+                        <div class="explanation-section">
+                            <div class="section-title">
+                                🔬 Technical Deep Dive
+                            </div>
+                            <div class="simple-explanation">
+                                <h4>AI Model Architecture</h4>
+                                <p>Multi-modal ensemble combining LSTM Autoencoder (weight: 0.4), Isolation Forest (weight: 0.3), and Statistical Process Control (weight: 0.3). SHAP values indicate bearing frequency harmonics as primary discriminator with sideband modulation analysis confirming bearing cage defect.</p>
+                            </div>
+
+                            <div class="feature-chart">
+                                <div class="chart-title">SHAP Feature Importance Values</div>
+                                <div class="feature-item">
+                                    <div class="feature-name">Bearing Freq (23.7 Hz)</div>
+                                    <div class="feature-bar">
+                                        <div class="feature-fill high" style="width: 94%;"></div>
+                                    </div>
+                                    <div class="feature-value">0.847</div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-name">Spectral Kurtosis</div>
+                                    <div class="feature-bar">
+                                        <div class="feature-fill high" style="width: 82%;"></div>
+                                    </div>
+                                    <div class="feature-value">0.623</div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-name">Crest Factor</div>
+                                    <div class="feature-bar">
+                                        <div class="feature-fill medium" style="width: 56%;"></div>
+                                    </div>
+                                    <div class="feature-value">0.412</div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-name">RMS Velocity</div>
+                                    <div class="feature-bar">
+                                        <div class="feature-fill medium" style="width: 43%;"></div>
+                                    </div>
+                                    <div class="feature-value">0.298</div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-name">Peak Amplitude</div>
+                                    <div class="feature-bar">
+                                        <div class="feature-fill low" style="width: 31%;"></div>
+                                    </div>
+                                    <div class="feature-value">0.187</div>
+                                </div>
+                            </div>
+
+                            <div class="tech-details">
+                                <h4 style="margin-bottom: 15px;">Signal Processing Parameters</h4>
+                                <div class="tech-grid">
+                                    <div class="tech-item">
+                                        <div class="tech-value">1 kHz</div>
+                                        <div class="tech-label">Sampling Rate</div>
+                                    </div>
+                                    <div class="tech-item">
+                                        <div class="tech-value">FFT 1024</div>
+                                        <div class="tech-label">Transform Size</div>
+                                    </div>
+                                    <div class="tech-item">
+                                        <div class="tech-value">Hanning</div>
+                                        <div class="tech-label">Window Function</div>
+                                    </div>
+                                    <div class="tech-item">
+                                        <div class="tech-value">50% Overlap</div>
+                                        <div class="tech-label">Window Overlap</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tech-details">
+                                <h4 style="margin-bottom: 15px;">Model Performance Metrics</h4>
+                                <div class="tech-grid">
+                                    <div class="tech-item">
+                                        <div class="tech-value">94.7%</div>
+                                        <div class="tech-label">Accuracy</div>
+                                    </div>
+                                    <div class="tech-item">
+                                        <div class="tech-value">2.8%</div>
+                                        <div class="tech-label">False Positive Rate</div>
+                                    </div>
+                                    <div class="tech-item">
+                                        <div class="tech-value">0.912</div>
+                                        <div class="tech-label">F1 Score</div>
+                                    </div>
+                                    <div class="tech-item">
+                                        <div class="tech-value">0.89</div>
+                                        <div class="tech-label">ROC AUC</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="simple-explanation">
+                                <h4>Federated Learning Contribution</h4>
+                                <p>This prediction benefits from federated learning across 324 participating households. Your device contributes anonymized vibration patterns while preserving privacy through differential privacy (ε=1.0) and secure aggregation protocols.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="action-btn btn-primary" onclick="scheduleRepair()">
+                            🔧 Schedule Repair
+                        </button>
+                        <button class="action-btn btn-success" onclick="downloadReport()">
+                            📄 Download Technical Report
+                        </button>
+                        <button class="action-btn btn-secondary" onclick="askQuestion()">
+                            ❓ Ask Question
+                        </button>
+                        <button class="action-btn btn-secondary" onclick="provideFeedback()">
+                            💬 Provide Feedback
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- What-If Analysis -->
+                <div class="sidebar-card">
+                    <div class="card-title">
+                        🤔 What-If Analysis
+                    </div>
+                    
+                    <div class="what-if-item" onclick="showWhatIf('ignore')">
+                        <div class="what-if-question">What if I ignore this alert?</div>
+                        <div class="what-if-answer">
+                            Problem will likely worsen. Energy costs increase $8-12/month. 
+                            Potential component damage within 2 weeks.
+                        </div>
+                    </div>
+                    
+                    <div class="what-if-item" onclick="showWhatIf('delay')">
+                        <div class="what-if-question">What if I delay repair by 1 week?</div>
+                        <div class="what-if-answer">
+                            Repair cost may increase to $200-250. Risk of complete failure 
+                            increases from 15% to 35%.
+                        </div>
+                    </div>
+                    
+                    <div class="what-if-item" onclick="showWhatIf('immediate')">
+                        <div class="what-if-question">What if I repair immediately?</div>
+                        <div class="what-if-answer">
+                            Return to normal efficiency within 24 hours. Prevent costly repairs. 
+                            Save $96+ per year in energy costs.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Similar Cases -->
+                <div class="sidebar-card">
+                    <div class="card-title">
+                        📋 Similar Cases
+                    </div>
+                    
+                    <div class="case-item">
+                        <div class="case-icon">🔧</div>
+                        <div class="case-content">
+                            <div class="case-title">Bearing Replacement Cases</div>
+                            <div class="case-stats">
+                                <span class="success-rate">92% Success</span>
+                                <span>156 cases resolved</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="case-item">
+                        <div class="case-icon">⚡</div>
+                        <div class="case-content">
+                            <div class="case-title">Energy Efficiency Recovery</div>
+                            <div class="case-stats">
+                                <span class="success-rate">87% Success</span>
+                                <span>Average 15% improvement</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="case-item">
+                        <div class="case-icon">💰</div>
+                        <div class="case-content">
+                            <div class="case-title">Cost Savings</div>
+                            <div class="case-stats">
+                                <span class="success-rate">94% Success</span>
+                                <span>Avg. $127 saved vs delayed repair</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Model Info -->
+                <div class="sidebar-card">
+                    <div class="card-title">
+                        🤖 AI Model Information
+                    </div>
+                    
+                    <div class="tech-details">
+                        <div class="tech-grid">
+                            <div class="tech-item">
+                                <div class="tech-value">LSTM</div>
+                                <div class="tech-label">Primary Model</div>
+                            </div>
+                            <div class="tech-item">
+                                <div class="tech-value">47</div>
+                                <div class="tech-label">Training Rounds</div>
+                            </div>
+                            <div class="tech-item">
+                                <div class="tech-value">324</div>
+                                <div class="tech-label">Contributing Devices</div>
+                            </div>
+                            <div class="tech-item">
+                                <div class="tech-value">89%</div>
+                                <div class="tech-label">Model Confidence</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 15px; background: #f0fff4; border-radius: 12px; border-left: 4px solid #48bb78; margin-top: 15px;">
+                        <div style="font-weight: 600; color: #2d3748; margin-bottom: 8px;">
+                            Privacy Protected
+                        </div>
+                        <div style="font-size: 14px; color: #718096; line-height: 1.5;">
+                            This prediction uses federated learning. Your data never leaves your device. 
+                            Only anonymous model improvements are shared.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prediction History -->
+                <div class="sidebar-card">
+                    <div class="card-title">
+                        📈 Prediction Accuracy
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span style="font-size: 14px; color: #4a5568;">Overall Accuracy</span>
+                            <span style="font-weight: 600; color: #667eea;">94.7%</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px;">
+                            <div style="width: 94.7%; height: 100%; background: #667eea; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span style="font-size: 14px; color: #4a5568;">Early Detection Rate</span>
+                            <span style="font-weight: 600; color: #48bb78;">91.3%</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px;">
+                            <div style="width: 91.3%; height: 100%; background: #48bb78; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span style="font-size: 14px; color: #4a5568;">User Satisfaction</span>
+                            <span style="font-weight: 600; color: #ed8936;">88.2%</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px;">
+                            <div style="width: 88.2%; height: 100%; background: #ed8936; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="sidebar-card">
+                    <div class="card-title">
+                        ⚡ Quick Actions
+                    </div>
+                    
+                    <div style="display: grid; gap: 10px;">
+                        <button class="action-btn btn-secondary" onclick="explainSimpler()" style="width: 100%; justify-content: center;">
+                            📝 Explain Simpler
+                        </button>
+                        <button class="action-btn btn-secondary" onclick="showMoreDetails()" style="width: 100%; justify-content: center;">
+                            🔍 More Technical Details
+                        </button>
+                        <button class="action-btn btn-secondary" onclick="compareModels()" style="width: 100%; justify-content: center;">
+                            📊 Compare AI Models
+                        </button>
+                        <button class="action-btn btn-secondary" onclick="viewDataSources()" style="width: 100%; justify-content: center;">
+                            💾 View Data Sources
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Explanation level management
+        let currentLevel = 'basic';
+
+        function setExplanationLevel(level) {
+            // Update button states
+            document.querySelectorAll('.level-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Hide all explanation sections
+            document.getElementById('basicExplanation').style.display = 'none';
+            document.getElementById('intermediateExplanation').style.display = 'none';
+            document.getElementById('advancedExplanation').style.display = 'none';
+
+            // Show selected explanation
+            document.getElementById(level + 'Explanation').style.display = 'block';
+            currentLevel = level;
+
+            // Animate feature bars based on level
+            animateFeatureBars();
+            
+            // Simulate loading for more complex explanations
+            if (level !== 'basic') {
+                showLoadingState();
+                setTimeout(() => {
+                    hideLoadingState();
+                    if (level === 'advanced') {
+                        generateAdvancedVisuals();
+                    }
+                }, 1000);
+            }
+        }
+
+        function animateFeatureBars() {
+            const featureFills = document.querySelectorAll('.feature-fill');
+            featureFills.forEach((fill, index) => {
+                fill.style.width = '0%';
+                setTimeout(() => {
+                    fill.style.width = fill.getAttribute('data-width') || fill.style.width;
+                }, index * 200);
+            });
+        }
+
+        function showLoadingState() {
+            const explanationContent = document.getElementById('explanationContent');
+            explanationContent.classList.add('loading');
+        }
+
+        function hideLoadingState() {
+            const explanationContent = document.getElementById('explanationContent');
+            explanationContent.classList.remove('loading');
+        }
+
+        function generateAdvancedVisuals() {
+            // Animate data points in trend chart
+            const dataPoints = document.querySelectorAll('.data-point');
+            dataPoints.forEach((point, index) => {
+                point.style.height = '0%';
+                setTimeout(() => {
+                    point.style.height = point.getAttribute('data-height') || point.style.height;
+                }, index * 100);
+            });
+        }
+
+        // What-if analysis functions
+        function showWhatIf(scenario) {
+            const scenarios = {
+                'ignore': {
+                    title: 'Ignoring the Alert',
+                    details: 'Risk Analysis:\n• 85% chance of complete failure within 30 days\n• Energy costs increase by $8-12/month\n• Repair costs could increase to $300+\n• Potential water damage from bearing failure\n• 3-5 days without washing machine'
+                },
+                'delay': {
+                    title: 'Delaying Repair by 1 Week',
+                    details: 'Impact Assessment:\n• Repair cost increases to $200-250\n• Failure risk increases from 15% to 35%\n• Additional wear on other components\n• Potential for emergency repair needed\n• 48% chance of needing replacement parts'
+                },
+                'immediate': {
+                    title: 'Immediate Repair Action',
+                    details: 'Benefits:\n• Fixed cost of $175 (parts + labor)\n• Return to 98% efficiency within 24 hours\n• Prevent cascade failures in other components\n• Extend washing machine life by 2-3 years\n• Annual energy savings of $96+'
+                }
+            };
+
+            const scenario_data = scenarios[scenario];
+            alert(`${scenario_data.title}\n\n${scenario_data.details}`);
+        }
+
+        // Action button functions
+        function scheduleRepair() {
+            alert('Scheduling Repair Service...\n\n' +
+                  'Available time slots:\n' +
+                  '• Tomorrow 9:00 AM - 12:00 PM\n' +
+                  '• Tomorrow 2:00 PM - 5:00 PM\n' +
+                  '• Day after tomorrow 8:00 AM - 11:00 AM\n\n' +
+                  'Estimated cost: $175 (includes parts)\n' +
+                  'Duration: 45-60 minutes\n' +
+                  'Warranty: 1 year on parts and labor');
+        }
+
+        function downloadReport() {
+            alert('Generating Technical Report...\n\n' +
+                  'Report includes:\n' +
+                  '• Complete vibration analysis data\n' +
+                  '• SHAP feature importance values\n' +
+                  '• Model prediction methodology\n' +
+                  '• Statistical confidence intervals\n' +
+                  '• Recommended maintenance schedule\n' +
+                  '• Cost-benefit analysis\n\n' +
+                  'Format: PDF (12 pages)\n' +
+                  'Download starting...');
+        }
+
+        function askQuestion() {
+            const question = prompt('What would you like to know about this prediction?\n\n' +
+                                  'Example questions:\n' +
+                                  '• How accurate are these predictions?\n' +
+                                  '• What data do you use to make decisions?\n' +
+                                  '• Can I prevent this in the future?\n' +
+                                  '• How does federated learning work?\n\n' +
+                                  'Your question:');
+            
+            if (question) {
+                // Simulate AI response based on common questions
+                let response = '';
+                if (question.toLowerCase().includes('accurate') || question.toLowerCase().includes('accuracy')) {
+                    response = 'Our predictions achieve 94.7% accuracy across all device types. For washing machine bearing failures specifically, we have 96.3% accuracy with an average lead time of 16.7 days before failure.';
+                } else if (question.toLowerCase().includes('data')) {
+                    response = 'We analyze vibration patterns, energy consumption, motor current, temperature, and usage frequency. All data stays on your device - only anonymous model improvements are shared through federated learning.';
+                } else if (question.toLowerCase().includes('prevent')) {
+                    response = 'Regular maintenance can prevent 78% of bearing failures. Our AI will recommend optimal cleaning schedules and load balancing to extend bearing life by up to 43%.';
+                } else if (question.toLowerCase().includes('federated')) {
+                    response = 'Federated learning trains AI models across many homes without sharing personal data. Your device learns from 324+ other homes while keeping your data private through differential privacy (ε=1.0).';
+                } else {
+                    response = 'That\'s a great question! Our AI system continuously learns and improves. Based on your current usage patterns and similar cases, we recommend following the maintenance schedule to optimize device performance.';
+                }
+                
+                alert(`AI Assistant Response:\n\n${response}\n\nWould you like more details on any specific aspect?`);
+            }
+        }
+
+        function provideFeedback() {
+            const feedback = prompt('Help us improve! Please rate this explanation:\n\n' +
+                                  '1 = Too complex / confusing\n' +
+                                  '2 = Somewhat helpful\n' +
+                                  '3 = Good explanation\n' +
+                                  '4 = Very clear and helpful\n' +
+                                  '5 = Excellent, perfect level of detail\n\n' +
+                                  'Rating (1-5):');
+            
+            if (feedback && feedback >= 1 && feedback <= 5) {
+                alert(`Thank you for your feedback!\n\n` +
+                      `Rating: ${feedback}/5\n\n` +
+                      `Your feedback helps us improve our explanations for all users. ` +
+                      `This rating will be used to train our explanation system to better match user preferences.`);
+                
+                // In real app, this would send feedback to improve the XAI system
+                console.log(`User feedback: ${feedback}/5 for ${currentLevel} explanation level`);
+            }
+        }
+
+        // Sidebar action functions
+        function explainSimpler() {
+            if (currentLevel !== 'basic') {
+                setExplanationLevel('basic');
+                alert('Switched to Basic explanation level for easier understanding.');
+            } else {
+                alert('You\'re already viewing the simplest explanation level.\n\n' +
+                      'Key takeaway: Your washing machine needs bearing repair within 2 weeks. ' +
+                      'Cost: $175 now vs $300+ if you wait.');
+            }
+        }
+
+        function showMoreDetails() {
+            if (currentLevel === 'basic') {
+                setExplanationLevel('intermediate');
+            } else if (currentLevel === 'intermediate') {
+                setExplanationLevel('advanced');
+            } else {
+                alert('You\'re already viewing the most detailed explanation level.\n\n' +
+                      'This includes:\n' +
+                      '• SHAP feature importance analysis\n' +
+                      '• Signal processing parameters\n' +
+                      '• Model performance metrics\n' +
+                      '• Federated learning details');
+            }
+        }
+
+        function compareModels() {
+            alert('AI Model Comparison:\n\n' +
+                  'Current Ensemble Performance:\n' +
+                  '• LSTM Autoencoder: 96.2% accuracy (weight: 40%)\n' +
+                  '• Isolation Forest: 91.8% accuracy (weight: 30%)\n' +
+                  '• Statistical Control: 89.4% accuracy (weight: 30%)\n\n' +
+                  'vs Single Model Alternatives:\n' +
+                  '• Standard LSTM: 87.3% accuracy\n' +
+                  '• Simple Threshold: 72.1% accuracy\n' +
+                  '• Classical ML: 83.6% accuracy\n\n' +
+                  'Our ensemble approach provides 8.9% better accuracy than single models.');
+        }
+
+        function viewDataSources() {
+            alert('Data Sources & Processing:\n\n' +
+                  'Sensor Data:\n' +
+                  '• 3-axis accelerometer (1 kHz sampling)\n' +
+                  '• Motor current sensor (60 Hz sampling)\n' +
+                  '• Temperature probe (1 Hz sampling)\n' +
+                  '• Energy consumption meter (0.1 Hz)\n\n' +
+                  'Processing Pipeline:\n' +
+                  '1. Data normalization & quality check\n' +
+                  '2. Feature extraction (time & frequency domain)\n' +
+                  '3. Edge computing for real-time analysis\n' +
+                  '4. Federated learning model updates\n' +
+                  '5. Privacy-preserving aggregation\n\n' +
+                  'All data remains on your device for privacy protection.');
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate feature bars on load
+            setTimeout(animateFeatureBars, 500);
+            
+            // Add entrance animations to cards
+            const cards = document.querySelectorAll('.sidebar-card, .explanation-content, .alert-context');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+
+            // Simulate real-time confidence updates
+            setInterval(() => {
+                const confidenceBadge = document.querySelector('.confidence-badge');
+                if (confidenceBadge) {
+                    const currentConfidence = parseFloat(confidenceBadge.textContent.match(/\d+/)[0]);
+                    const newConfidence = Math.max(85, Math.min(95, currentConfidence + (Math.random() - 0.5) * 2));
+                    confidenceBadge.textContent = `Confidence: ${newConfidence.toFixed(0)}%`;
+                }
+            }, 30000); // Update every 30 seconds
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.altKey) {
+                switch(e.key) {
+                    case '1':
+                        window.location.href = 'index.html';
+                        break;
+                    case '2':
+                        window.location.href = 'alerts.html';
+                        break;
+                    case '3':
+                        window.location.href = 'maintenance.html';
+                        break;
+                    case '4':
+                        // Already on explanation page
+                        break;
+                }
+            }
+            
+            // Number keys for explanation levels
+            if (e.key >= '1' && e.key <= '3') {
+                const levels = ['basic', 'intermediate', 'advanced'];
+                setExplanationLevel(levels[parseInt(e.key) - 1]);
+            }
+        });
+
+        // Touch gestures for mobile
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+
+            // Horizontal swipe for explanation levels
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+                if (deltaX > 0) {
+                    // Swipe right - simpler explanation
+                    explainSimpler();
+                } else {
+                    // Swipe left - more detailed explanation  
+                    showMoreDetails();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

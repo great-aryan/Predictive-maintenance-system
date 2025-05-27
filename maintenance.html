@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance Scheduling - Smart Home Predictive Maintenance</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo-text h1 {
+            font-size: 24px;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .logo-text p {
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .back-button {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        /* Page Title */
+        .page-title {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .page-title h2 {
+            font-size: 32px;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .page-title p {
+            font-size: 16px;
+            color: #718096;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+        }
+
+        /* Calendar Section */
+        .calendar-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .calendar-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            padding: 8px 12px;
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .month-year {
+            font-size: 18px;
+            font-weight: 500;
+            color: #4a5568;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .calendar-header-day {
+            background: #667eea;
+            color: white;
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .calendar-day {
+            background: white;
+            min-height: 100px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            border: 2px solid transparent;
+        }
+
+        .calendar-day:hover {
+            background: #f7fafc;
+            border-color: #667eea;
+        }
+
+        .calendar-day.today {
+            background: #e6fffa;
+            border-color: #4fd1c7;
+        }
+
+        .calendar-day.other-month {
+            background: #f7fafc;
+            color: #a0aec0;
+        }
+
+        .day-number {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .day-events {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .event-dot {
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            margin-bottom: 2px;
+        }
+
+        .event-maintenance {
+            background: #ed8936;
+        }
+
+        .event-inspection {
+            background: #4299e1;
+        }
+
+        .event-replacement {
+            background: #e53e3e;
+        }
+
+        .event-cleaning {
+            background: #48bb78;
+        }
+
+        .event-label {
+            font-size: 10px;
+            color: #4a5568;
+            margin-top: 2px;
+            line-height: 1.2;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .sidebar-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Upcoming Tasks */
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+
+        .task-item:hover {
+            background: #edf2f7;
+            transform: translateX(5px);
+        }
+
+        .task-item.urgent {
+            border-left-color: #e53e3e;
+        }
+
+        .task-item.normal {
+            border-left-color: #4299e1;
+        }
+
+        .task-item.routine {
+            border-left-color: #48bb78;
+        }
+
+        .task-icon {
+            font-size: 24px;
+            width: 40px;
+            text-align: center;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title {
+            font-weight: 500;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .task-details {
+            font-size: 12px;
+            color: #718096;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .task-time {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .task-cost {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .action-btn {
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .action-btn.secondary {
+            background: #48bb78;
+        }
+
+        .action-btn.secondary:hover {
+            background: #38a169;
+        }
+
+        .action-icon {
+            font-size: 24px;
+        }
+
+        .action-text {
+            font-size: 12px;
+        }
+
+        /* Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 12px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        /* Legend */
+        .legend {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #4a5568;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            margin: 50px auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #718096;
+            padding: 5px;
+        }
+
+        .close-btn:hover {
+            color: #2d3748;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+        }
+
+        .btn-secondary {
+            background: #edf2f7;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .calendar-day {
+                min-height: 80px;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .calendar-nav {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .calendar-day {
+                min-height: 60px;
+                padding: 5px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">🏠</div>
+                <div class="logo-text">
+                    <h1>Smart Home Predictive Maintenance</h1>
+                    <p>AI-Powered IoT Device Monitoring</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="index.html" class="back-button">
+                    ← Back to Dashboard
+                </a>
+            </div>
+        </header>
+
+        <!-- Page Title -->
+        <div class="page-title">
+            <h2>📅 Maintenance Scheduling</h2>
+            <p>Plan and track all maintenance activities across your smart home devices</p>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Calendar Section -->
+            <div class="calendar-section">
+                <div class="calendar-header">
+                    <h3 class="calendar-title">Maintenance Calendar</h3>
+                    <div class="calendar-nav">
+                        <button class="nav-btn" onclick="previousMonth()">‹</button>
+                        <div class="month-year" id="monthYear">March 2024</div>
+                        <button class="nav-btn" onclick="nextMonth()">›</button>
+                    </div>
+                </div>
+
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar will be generated by JavaScript -->
+                </div>
+
+                <!-- Legend -->
+                <div class="sidebar-card">
+                    <div class="card-title">📋 Event Types</div>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color event-maintenance"></div>
+                            <span>Filter Replacement</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color event-inspection"></div>
+                            <span>System Inspection</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color event-replacement"></div>
+                            <span>Part Replacement</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color event-cleaning"></div>
+                            <span>Deep Cleaning</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Upcoming Tasks -->
+                <div class="sidebar-card">
+                    <div class="card-title">⏰ Upcoming Tasks</div>
+                    
+                    <div class="task-item urgent" onclick="showTaskDetails('refrigerator_filter')">
+                        <div class="task-icon">🧊</div>
+                        <div class="task-content">
+                            <div class="task-title">Refrigerator Filter</div>
+                            <div class="task-details">
+                                <span class="task-time">15 min</span>
+                                <span class="task-cost">$40</span>
+                                <span>Tomorrow</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="task-item normal" onclick="showTaskDetails('hvac_inspection')">
+                        <div class="task-icon">❄️</div>
+                        <div class="task-content">
+                            <div class="task-title">HVAC System Check</div>
+                            <div class="task-details">
+                                <span class="task-time">45 min</span>
+                                <span class="task-cost">$120</span>
+                                <span>This Weekend</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="task-item routine" onclick="showTaskDetails('washing_machine')">
+                        <div class="task-icon">👕</div>
+                        <div class="task-content">
+                            <div class="task-title">Washing Machine Clean</div>
+                            <div class="task-details">
+                                <span class="task-time">30 min</span>
+                                <span class="task-cost">Free</span>
+                                <span>Next Week</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="sidebar-card">
+                    <div class="card-title">⚡ Quick Actions</div>
+                    <div class="quick-actions">
+                        <button class="action-btn" onclick="openAddTaskModal()">
+                            <div class="action-icon">➕</div>
+                            <div class="action-text">Add Manual Task</div>
+                        </button>
+                        <button class="action-btn secondary" onclick="viewHistory()">
+                            <div class="action-icon">📋</div>
+                            <div class="action-text">View History</div>
+                        </button>
+                        <button class="action-btn" onclick="exportCalendar()">
+                            <div class="action-icon">📤</div>
+                            <div class="action-text">Export Calendar</div>
+                        </button>
+                        <button class="action-btn secondary" onclick="syncDevices()">
+                            <div class="action-icon">🔄</div>
+                            <div class="action-text">Sync Devices</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Statistics -->
+                <div class="sidebar-card">
+                    <div class="card-title">📊 This Month</div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number">8</div>
+                            <div class="stat-label">Tasks Completed</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">3</div>
+                            <div class="stat-label">Pending Tasks</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">$245</div>
+                            <div class="stat-label">Cost Saved</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">0</div>
+                            <div class="stat-label">Overdue Items</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Recommendations -->
+                <div class="sidebar-card">
+                    <div class="card-title">🤖 AI Recommendations</div>
+                    <div style="padding: 15px; background: #f0fff4; border-radius: 12px; border-left: 4px solid #48bb78;">
+                        <div style="font-weight: 600; color: #2d3748; margin-bottom: 8px;">
+                            Optimal Scheduling
+                        </div>
+                        <div style="font-size: 14px; color: #718096; line-height: 1.5;">
+                            Based on usage patterns, schedule HVAC maintenance on weekends for minimal disruption. 
+                            Energy savings of 12% possible with proper timing.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div class="modal" id="addTaskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Maintenance Task</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <form id="addTaskForm">
+                <div class="form-group">
+                    <label class="form-label">Task Title</label>
+                    <input type="text" class="form-input" id="taskTitle" placeholder="e.g., Replace air filter">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Device/System</label>
+                    <select class="form-select" id="taskDevice">
+                        <option value="">Select device...</option>
+                        <option value="hvac">HVAC System</option>
+                        <option value="refrigerator">Refrigerator</option>
+                        <option value="washing_machine">Washing Machine</option>
+                        <option value="dishwasher">Dishwasher</option>
+                        <option value="smart_tv">Smart TV</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Scheduled Date</label>
+                    <input type="date" class="form-input" id="taskDate">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select class="form-select" id="taskPriority">
+                        <option value="routine">Routine</option>
+                        <option value="normal">Normal</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Estimated Duration</label>
+                    <input type="text" class="form-input" id="taskDuration" placeholder="e.g., 30 minutes">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Estimated Cost</label>
+                    <input type="text" class="form-input" id="taskCost" placeholder="e.g., $25">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-textarea" id="taskNotes" placeholder="Additional notes or instructions..."></textarea>
+                </div>
+            </form>
+            
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="addTask()">Add Task</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+
+        // Sample maintenance events
+        const maintenanceEvents = {
+            '2024-03-28': [
+                { type: 'maintenance', title: 'Refrigerator Filter', icon: '🧊' }
+            ],
+            '2024-03-30': [
+                { type: 'inspection', title: 'HVAC Inspection', icon: '❄️' }
+            ],
+            '2024-04-02': [
+                { type: 'cleaning', title: 'Washing Machine Clean', icon: '👕' }
+            ],
+            '2024-04-05': [
+                { type: 'replacement', title: 'Dishwasher Seal', icon: '🍽️' }
+            ],
+            '2024-04-12': [
+                { type: 'maintenance', title: 'Smart TV Update', icon: '📺' }
+            ]
+        };
+
+        function generateCalendar() {
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const today = new Date();
+            
+            // Update month/year display
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            document.getElementById('monthYear').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            
+            const calendarGrid = document.getElementById('calendarGrid');
+            calendarGrid.innerHTML = '';
+            
+            // Add day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const headerDay = document.createElement('div');
+                headerDay.className = 'calendar-header-day';
+                headerDay.textContent = day;
+                calendarGrid.appendChild(headerDay);
+            });
+            
+            // Add empty cells for days before the first day of the month
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day other-month';
+                calendarGrid.appendChild(emptyDay);
+            }
+            
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                
+                // Check if it's today
+                if (today.getDate() === day && 
+                    today.getMonth() === currentMonth && 
+                    today.getFullYear() === currentYear) {
+                    dayElement.classList.add('today');
+                }
+                
+                const dayNumber = document.createElement('div');
+                dayNumber.className = 'day-number';
+                dayNumber.textContent = day;
+                dayElement.appendChild(dayNumber);
+                
+                const dayEvents = document.createElement('div');
+                dayEvents.className = 'day-events';
+                
+                // Check for events on this day
+                const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                if (maintenanceEvents[dateKey]) {
+                    maintenanceEvents[dateKey].forEach(event => {
+                        const eventDot = document.createElement('div');
+                        eventDot.className = `event-dot event-${event.type}`;
+                        dayEvents.appendChild(eventDot);
+                        
+                        const eventLabel = document.createElement('div');
+                        eventLabel.className = 'event-label';
+                        eventLabel.textContent = event.title;
+                        dayEvents.appendChild(eventLabel);
+                    });
+                }
+                
+                dayElement.appendChild(dayEvents);
+                dayElement.onclick = () => selectDate(day);
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        function previousMonth() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            generateCalendar();
+        }
+
+        function nextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            generateCalendar();
+        }
+function selectDate(day) {
+    const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    if (maintenanceEvents[dateKey]) {
+        showDayEvents(dateKey, day);
+    } else {
+        showAddEventOption(dateKey, day);
+    }
+}
+
+function showDayEvents(dateKey, day) {
+    const events = maintenanceEvents[dateKey];
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'];
+    
+    let eventsList = events.map(event => 
+        `• ${event.icon} ${event.title}`
+    ).join('\n');
+    
+    alert(`Events for ${monthNames[currentMonth]} ${day}, ${currentYear}:\n\n${eventsList}\n\nClick on a task in the sidebar to manage it.`);
+}
+
+function showAddEventOption(dateKey, day) {
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'];
+    
+    if (confirm(`No events scheduled for ${monthNames[currentMonth]} ${day}, ${currentYear}.\n\nWould you like to add a maintenance task for this date?`)) {
+        openAddTaskModal();
+        // Pre-fill the date
+        const formattedDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        document.getElementById('taskDate').value = formattedDate;
+    }
+}
+
+function showTaskDetails(taskId) {
+    const taskDetails = {
+        'refrigerator_filter': {
+            title: 'Refrigerator Water Filter Replacement',
+            device: 'Smart Refrigerator (REF_4A8B9C2D)',
+            description: 'Water flow rate has decreased by 23%. Filter efficiency at 65%.',
+            steps: [
+                'Order replacement filter (HAF-CIN/EXP)',
+                'Turn off water supply to refrigerator',
+                'Remove old filter by twisting counterclockwise',
+                'Install new filter and twist clockwise until secure',
+                'Reset filter indicator on display panel',
+                'Run water for 3-5 minutes to clear air'
+            ],
+            priority: 'Medium',
+            duration: '15 minutes',
+            cost: '$40',
+            confidence: '95%'
+        },
+        'hvac_inspection': {
+            title: 'HVAC System Professional Inspection',
+            device: 'Central Air System (HVAC_7F3E1A9B)',
+            description: 'Scheduled quarterly inspection to maintain optimal performance.',
+            steps: [
+                'Schedule appointment with certified technician',
+                'Check refrigerant levels and pressure',
+                'Inspect ductwork for leaks',
+                'Clean condenser coils',
+                'Test thermostat calibration',
+                'Replace air filter if needed',
+                'Verify electrical connections'
+            ],
+            priority: 'Normal',
+            duration: '45 minutes',
+            cost: '$120',
+            confidence: '98%'
+        },
+        'washing_machine': {
+            title: 'Washing Machine Deep Cleaning Cycle',
+            device: 'Smart Washing Machine (WM_B5D2C8A7)',
+            description: 'Recommended monthly cleaning to prevent buildup and maintain efficiency.',
+            steps: [
+                'Remove all clothes and items from drum',
+                'Add 2 cups white vinegar to drum',
+                'Run hottest water setting for full cycle',
+                'Wipe down drum, door, and gaskets',
+                'Clean detergent dispenser',
+                'Leave door open to air dry'
+            ],
+            priority: 'Routine',
+            duration: '30 minutes active + 2 hours cycle',
+            cost: 'Free',
+            confidence: '100%'
+        }
+    };
+    
+    const task = taskDetails[taskId];
+    if (task) {
+        let stepsText = task.steps.map((step, index) => `${index + 1}. ${step}`).join('\n');
+        
+        alert(`${task.title}\n\n` +
+              `Device: ${task.device}\n` +
+              `Priority: ${task.priority}\n` +
+              `Duration: ${task.duration}\n` +
+              `Cost: ${task.cost}\n` +
+              `AI Confidence: ${task.confidence}\n\n` +
+              `Description: ${task.description}\n\n` +
+              `Steps to Complete:\n${stepsText}`);
+    }
+}
+
+function openAddTaskModal() {
+    document.getElementById('addTaskModal').style.display = 'block';
+    // Set default date to today if not already set
+    if (!document.getElementById('taskDate').value) {
+        const today = new Date();
+        const formattedDate = today.toISOString().split('T')[0];
+        document.getElementById('taskDate').value = formattedDate;
+    }
+}
+
+function closeModal() {
+    document.getElementById('addTaskModal').style.display = 'none';
+    document.getElementById('addTaskForm').reset();
+}
+
+function addTask() {
+    const form = document.getElementById('addTaskForm');
+    const formData = new FormData(form);
+    
+    const taskData = {
+        title: document.getElementById('taskTitle').value,
+        device: document.getElementById('taskDevice').value,
+        date: document.getElementById('taskDate').value,
+        priority: document.getElementById('taskPriority').value,
+        duration: document.getElementById('taskDuration').value,
+        cost: document.getElementById('taskCost').value,
+        notes: document.getElementById('taskNotes').value
+    };
+    
+    // Validate required fields
+    if (!taskData.title || !taskData.device || !taskData.date) {
+        alert('Please fill in all required fields (Title, Device, Date).');
+        return;
+    }
+    
+    // Add to events (in real app, this would save to database)
+    if (!maintenanceEvents[taskData.date]) {
+        maintenanceEvents[taskData.date] = [];
+    }
+    
+    // Determine event type and icon based on device
+    const deviceIcons = {
+        'hvac': '❄️',
+        'refrigerator': '🧊',
+        'washing_machine': '👕',
+        'dishwasher': '🍽️',
+        'smart_tv': '📺',
+        'other': '🔧'
+    };
+    
+    maintenanceEvents[taskData.date].push({
+        type: 'maintenance',
+        title: taskData.title,
+        icon: deviceIcons[taskData.device] || '🔧'
+    });
+    
+    // Show confirmation
+    alert(`Task "${taskData.title}" has been scheduled for ${taskData.date}.\n\n` +
+          `Device: ${taskData.device}\n` +
+          `Priority: ${taskData.priority}\n` +
+          `Duration: ${taskData.duration}\n` +
+          `Cost: ${taskData.cost}`);
+    
+    // Close modal and refresh calendar
+    closeModal();
+    generateCalendar();
+    updateTaskStats();
+}
+
+function viewHistory() {
+    const historyData = [
+        { date: '2024-03-15', task: 'HVAC Filter Replacement', status: 'Completed', cost: '$25' },
+        { date: '2024-03-10', task: 'Dishwasher Deep Clean', status: 'Completed', cost: 'Free' },
+        { date: '2024-03-05', task: 'Smart TV Software Update', status: 'Completed', cost: 'Free' },
+        { date: '2024-02-28', task: 'Refrigerator Coil Cleaning', status: 'Completed', cost: '$0' },
+        { date: '2024-02-20', task: 'Washing Machine Repair', status: 'Completed', cost: '$175' }
+    ];
+    
+    let historyText = 'Recent Maintenance History:\n\n';
+    historyData.forEach(item => {
+        historyText += `${item.date}: ${item.task}\n`;
+        historyText += `Status: ${item.status} | Cost: ${item.cost}\n\n`;
+    });
+    
+    alert(historyText + 'Total maintenance savings this year: $890\nPrevented failures: 4\nAverage device lifespan increase: 43%');
+}
+
+function exportCalendar() {
+    alert('Exporting maintenance calendar...\n\n' +
+          'Available formats:\n' +
+          '• PDF Report (with AI insights)\n' +
+          '• iCal file (for calendar apps)\n' +
+          '• CSV data export\n' +
+          '• Google Calendar sync\n\n' +
+          'Export would include:\n' +
+          '• All scheduled maintenance\n' +
+          '• Cost projections\n' +
+          '• AI recommendations\n' +
+          '• Performance metrics');
+}
+
+function syncDevices() {
+    alert('Syncing with IoT devices...\n\n' +
+          'Checking for:\n' +
+          '• New maintenance alerts\n' +
+          '• Updated device status\n' +
+          '• Performance changes\n' +
+          '• AI recommendations\n\n' +
+          'Sync completed successfully!\n' +
+          '2 new recommendations added to calendar.');
+    
+    // Simulate adding new AI-generated tasks
+    setTimeout(() => {
+        // Add a new maintenance event
+        maintenanceEvents['2024-04-08'] = [
+            { type: 'maintenance', title: 'Smart TV Cache Clear', icon: '📺' }
+        ];
+        generateCalendar();
+    }, 1000);
+}
+
+function updateTaskStats() {
+    // Update statistics (in real app, this would calculate from actual data)
+    const stats = document.querySelectorAll('.stat-number');
+    if (stats.length >= 4) {
+        stats[1].textContent = parseInt(stats[1].textContent) + 1; // Increase pending tasks
+    }
+}
+
+// Modal event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Generate initial calendar
+    generateCalendar();
+    
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('addTaskModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    };
+    
+    // Add entrance animations to task items
+    const taskItems = document.querySelectorAll('.task-item');
+    taskItems.forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(-20px)';
+        setTimeout(() => {
+            item.style.transition = 'all 0.5s ease';
+            item.style.opacity = '1';
+            item.style.transform = 'translateX(0)';
+        }, index * 100);
+    });
+    
+    // Animate statistics
+    const statNumbers = document.querySelectorAll('.stat-number');
+    statNumbers.forEach(stat => {
+        const originalText = stat.textContent;
+        if (!isNaN(originalText)) {
+            const targetValue = parseInt(originalText);
+            let currentValue = 0;
+            const increment = targetValue / 30;
+            
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= targetValue) {
+                    stat.textContent = originalText;
+                    clearInterval(timer);
+                } else {
+                    stat.textContent = Math.floor(currentValue);
+                }
+            }, 50);
+        }
+    });
+    
+    // Auto-refresh calendar every hour (for demo purposes)
+    setInterval(() => {
+        console.log('Auto-refreshing calendar data...');
+        // In real app, this would fetch updated data from server
+    }, 3600000); // 1 hour
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    if (e.altKey) {
+        switch(e.key) {
+            case '1':
+                window.location.href = 'index.html';
+                break;
+            case '2':
+                window.location.href = 'alerts.html';
+                break;
+            case '3':
+                // Already on maintenance page
+                break;
+            case '4':
+                window.location.href = 'explanation.html';
+                break;
+        }
+    }
+    
+    // ESC to close modal
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+    
+    // N to add new task
+    if (e.key === 'n' && e.ctrlKey) {
+        e.preventDefault();
+        openAddTaskModal();
+    }
+});
+
+// Touch/swipe support for mobile calendar navigation
+let startX = null;
+
+document.addEventListener('touchstart', function(e) {
+    startX = e.touches[0].clientX;
+});
+
+document.addEventListener('touchend', function(e) {
+    if (!startX) return;
+    
+    const endX = e.changedTouches[0].clientX;
+    const diffX = startX - endX;
+    
+    // Swipe threshold
+    if (Math.abs(diffX) > 50) {
+        if (diffX > 0) {
+            nextMonth(); // Swipe left - next month
+        } else {
+            previousMonth(); // Swipe right - previous month
+        }
+    }
+    
+    startX = null;
+});
+
+// Utility functions for enhanced functionality
+function rescheduleTask(taskId, newDate) {
+    // Function to reschedule a task (drag and drop functionality)
+    alert(`Rescheduling task ${taskId} to ${newDate}...\n\nTask has been moved successfully!`);
+}
+
+function duplicateTask(taskId) {
+    // Function to duplicate a recurring task
+    alert(`Creating duplicate of task ${taskId}...\n\nTask duplicated for next month!`);
+}
+
+function setReminder(taskId, reminderTime) {
+    // Function to set custom reminders
+    alert(`Reminder set for task ${taskId}\n\nYou will be notified ${reminderTime} before the scheduled time.`);
+}
+
+function optimizeSchedule() {
+    // AI-powered schedule optimization
+    alert('AI Schedule Optimization:\n\n' +
+          'Analyzing your maintenance schedule...\n' +
+          '• Moving dishwasher cleaning to weekends\n' +
+          '• Combining HVAC tasks for efficiency\n' +
+          '• Scheduling during low-usage hours\n\n' +
+          'Estimated time savings: 25%\n' +
+          'Cost reduction: $45/month');
+}
+
+// Weather integration for outdoor tasks
+function checkWeatherImpact(date) {
+    // Check if weather affects scheduled outdoor maintenance
+    const weatherConditions = ['sunny', 'rainy', 'snowy', 'windy'];
+    const randomWeather = weatherConditions[Math.floor(Math.random() * weatherConditions.length)];
+    
+    if (randomWeather === 'rainy') {
+        alert(`Weather Alert for ${date}:\n\nRain expected - consider rescheduling outdoor maintenance tasks.`);
+    }
+}
+
+// Energy usage correlation
+function showEnergyImpact(taskType) {
+    const energyImpacts = {
+        'filter': 'Expected 8% energy savings after filter replacement',
+        'cleaning': 'Deep cleaning can improve efficiency by 5-12%',
+        'inspection': 'Professional inspection prevents 15% energy waste',
+        'repair': 'Repairs typically restore 90%+ original efficiency'
+    };
+    
+    return energyImpacts[taskType] || 'Maintenance helps maintain optimal energy efficiency';
+}    
+</script>
+</body>
+</html>
